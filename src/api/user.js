@@ -1,4 +1,4 @@
-import request from '@/utils/request'
+// import request from '@/utils/request'
 
 // 按需导出  返回的是promise对象
 export function login(data) { 

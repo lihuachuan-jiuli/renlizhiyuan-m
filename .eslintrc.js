@@ -9,7 +9,7 @@ module.exports = {
     node: true,
     es6: true,
   },
-  extends: ['plugin:vue/recommended', 'eslint:recommended'],
+  extends: ['plugin:vue/recommended'], //'eslint:recommended'],
 
   // add your custom rules here
   //it is base on https://github.com/vuejs/eslint-config-vue
@@ -108,7 +108,7 @@ module.exports = {
     'no-multi-spaces': 2,
     'no-multi-str': 2,
     'no-multiple-empty-lines': [2, {
-      'max': 1
+      'max':1
     }],
     'no-native-reassign': 2,
     'no-negated-in-lhs': 2,

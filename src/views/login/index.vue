@@ -3,17 +3,20 @@
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
 
       <div class="title-container">
-        <h3 class="title">Login Form</h3>
+        <h1 class="title">
+         Li-Hua 后台登录系统
+          <!-- <img src="@/assets/common/login-logo.png" alt=""> -->
+        </h1>
       </div>
 
-      <el-form-item prop="username">
+      <el-form-item prop="mobile">
         <span class="svg-container">
           <svg-icon icon-class="user" />
         </span>
         <el-input
           ref="username"
-          v-model="loginForm.username"
-          placeholder="Username"
+          v-model="loginForm.mobile"
+          placeholder="请输入手机号"
           name="username"
           type="text"
           tabindex="1"
@@ -30,22 +33,26 @@
           ref="password"
           v-model="loginForm.password"
           :type="passwordType"
-          placeholder="Password"
+          placeholder="请输入密码"
           name="password"
           tabindex="2"
           auto-complete="on"
           @keyup.enter.native="handleLogin"
         />
+        <!-- enter 是按键的修饰符-回车 native也是修饰符: 表示组件的原生事件 -->
         <span class="show-pwd" @click="showPwd">
           <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
         </span>
       </el-form-item>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
+      <el-button class="loginBtn" :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">登录</el-button>
 
       <div class="tips">
-        <span style="margin-right:20px;">username: admin</span>
-        <span> password: any</span>
+        <span style="margin-right:20px;">账号: 13888888888</span>
+        <span> 密码: 123456</span>
+        <div style="margin-top: 30px">
+          <span>此项目只为练习和学习</span>
+        </div>
       </div>
 
     </el-form>
@@ -53,33 +60,33 @@
 </template>
 
 <script>
-import { validUsername } from '@/utils/validate'
-
+// 引入手机号校验格式
+import { validMobile } from '@/utils/validate'
+import {mapActions} from "vuex" //引入辅助函数
 export default {
   name: 'Login',
   data() {
-    const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
-        callback(new Error('Please enter the correct user name'))
+    // 校验成功执行callback()
+    // 校验失败也执行 callback (new Error("错误信息"))
+    const validateMobile = (rule, value, callback) => {
+      if (!validMobile(value)) {
+        callback(new Error('手机号的格式不正确'))
       } else {
         callback()
       }
+      // validMobile(value) ? callback() : callback(new Error('手机号的格式不正确'))
     }
-    const validatePassword = (rule, value, callback) => {
-      if (value.length < 6) {
-        callback(new Error('The password can not be less than 6 digits'))
-      } else {
-        callback()
-      }
-    }
+
     return {
       loginForm: {
-        username: 'admin',
-        password: '111111'
+        mobile: '13888888888',
+        password: '123456'
       },
       loginRules: {
-        username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        password: [{ required: true, trigger: 'blur', validator: validatePassword }]
+        // trigger 校验的触发方式 blur/change
+        // validator /自定义函数
+        mobile: [{ required: true, trigger: 'blur', message: '手机号不能为空' }, { validator: validateMobile, trigger: 'blur' }],
+        password: [{ required: true, trigger: 'blur', message: '密码不能为空' }, { trigger: 'blur', min: 6, max: 16, message: '密码长度为6~16位之间' }]
       },
       loading: false,
       passwordType: 'password',
@@ -95,6 +102,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['user/login']),
     showPwd() {
       if (this.passwordType === 'password') {
         this.passwordType = ''
@@ -105,32 +113,41 @@ export default {
         this.$refs.password.focus()
       })
     },
+
+    // 登录按钮 和键盘回车 事件的方法
     handleLogin() {
-      this.$refs.loginForm.validate(valid => {
-        if (valid) {
-          this.loading = true
-          this.$store.dispatch('user/login', this.loginForm).then(() => {
-            this.$router.push({ path: this.redirect || '/' })
+      // 表单手动校验
+      this.$refs.loginForm.validate(async isOk =>{
+        if(isOk) {
+          try{
+            this.loading = true,
+            // 只有通过校验, 我们才去调用action
+          await this['user/login'](this.loginFrom)
+          // 应该登录成功之后
+          // async 标记的函数实际上 是一promise 对象
+          // await 下面的代码 都是成功的代码
+          this.$router.push('/') //成功之后路由跳转到首页
+          }catch(error){
+            console.log(error)       
+          } finally{
+            // 不论执行try 还是 catch  都去关闭转圈动画
             this.loading = false
-          }).catch(() => {
-            this.loading = false
-          })
-        } else {
-          console.log('error submit!!')
-          return false
+          }
         }
       })
+   
+      // ref 可以获取一个元素的dom对象
+      //ref作用到组件上的时候, 可以获取到该组件的实例 this
+
     }
   }
 }
 </script>
 
 <style lang="scss">
-/* 修复input 背景不协调 和光标变色 */
-/* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
 
 $bg:#283443;
-$light_gray:#fff;
+$light_gray:black; //表单内部字体颜色
 $cursor: #fff;
 
 @supports (-webkit-mask: none) and (not (cater-color: $cursor)) {
@@ -141,6 +158,8 @@ $cursor: #fff;
 
 /* reset element-ui css */
 .login-container {
+  background-image: url('~@/assets/common/login2.jpg');
+ background-position: center; // // 将图片位置设置为充满整个屏幕
   .el-input {
     display: inline-block;
     height: 47px;
@@ -165,10 +184,21 @@ $cursor: #fff;
 
   .el-form-item {
     border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.7); // 输入登录表单的背景色
     border-radius: 5px;
     color: #454545;
   }
+// 设置错误信息的颜色
+  .el-form-item__error {
+    color: #fff
+  }
+  //登录按钮样式
+  .loginBtn {
+    background: #407ffe;
+  height: 55px;
+  line-height: 27px;
+  font-size: 24px;
+}
 }
 </style>
 
@@ -216,8 +246,8 @@ $light_gray:#eee;
     position: relative;
 
     .title {
-      font-size: 26px;
-      color: $light_gray;
+      font-size: 40px;
+      color: black;
       margin: 0px auto 40px auto;
       text-align: center;
       font-weight: bold;
