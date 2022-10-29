@@ -1,7 +1,17 @@
-// import request from '@/utils/request'
+import request from '@/utils/request'
 
-// 按需导出  返回的是promise对象
-export function login(data) { 
+/**
+ * 登录接口的封装
+ * **/ 
+// 按需导出  
+export function login(data) {
+  // 返回promise对象 
+  return request({
+    url:'/sys/login',
+    method: 'POST',
+    data,
+    
+  })
 
 }
 

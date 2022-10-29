@@ -1,33 +1,41 @@
 import axios from 'axios'
-import {Message} from "element-ui"
-
+import { Message } from 'element-ui'
+import { getTimeStamp } from '@/utils/auth'
+import store from '@/store'
+import router from '@/router'
+const TimeOut = 5400 // 定义超时时间
 const service = axios.create({
-// 当执行 npm run dev => .env.development => /api => 跨域代理
-  baseURL:process.env.VUE_APP_BASE_API, // /api  
-  timeout: 5000 //设置超时时间
- 
+//    设置基础地址
+// 环境变量 npm run dev  /api   /生产环境 npm run build  /prod-api
+  baseURL: process.env.VUE_APP_BASE_API,
+  timeout: 10000 // 认为只要超过5秒钟不响应 就超时
 })
 
-service.interceptors.request.use()
-
-// 相应拦截器
-service.interceptors.response.use((response)=>{
-  // axios 默认加了一层data
-  // 解构
- const {success, message, data} = response.data
-//  判断 要根据 success 的成功与否 决定下面的操作
-if(success){
-  return data
-}else {
-  // 此时业务已经错误了, 应该进 catch
-  Message.error(message)//提示错误信息
-  return Promise.reject( new Error(message))
-}
-
-},error =>{
-  Message.error(error.message)  //提示错误信息
-   return Promise.reject(error) //返回执行错误 ,让当前的执行链条出成功, 直接进入 catch
+// 响应拦截器
+service.interceptors.response.use(response => {
+  // 成功执行
+  // axios默认加了一层data的包裹
+  const { success, message, data } = response.data
+  if (success) {
+    // 此时认为业务执行成功了
+    return data // 返回用户所需要的数据
+  } else {
+    // 当业务失败的时候
+    Message.error(message) // 提示消息
+    return Promise.reject(new Error(message))
+  }
+}, async error => {
+  // error 有response对象 config
+  if (error.response && error.response.data && error.response.data.code === 10002) {
+    // 后端告诉前端token超时了
+    await store.dispatch('user/lgout') // 调用登出action
+    router.push('/login') // 跳到登录页
+  }
+  // 失败
+  // Message等同于 this.$message
+  Message.error(error.message) // 提示错误
+  // reject
+  return Promise.reject(error) // 传入一个错误的对象  就认为promise执行链 进入了catch
 })
-
 
 export default service
