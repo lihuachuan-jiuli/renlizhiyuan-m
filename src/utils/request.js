@@ -3,6 +3,7 @@ import { Message } from 'element-ui'
 import { getTimeStamp } from '@/utils/auth'
 import store from '@/store'
 import router from '@/router'
+import { config } from '@vue/test-utils'
 const TimeOut = 5400 // 定义超时时间
 const service = axios.create({
 //    设置基础地址
@@ -10,6 +11,20 @@ const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API,
   timeout: 10000 // 认为只要超过5秒钟不响应 就超时
 })
+
+// 请求拦截器
+service.interceptors.request.use(config=>{
+  // config 是请求的配置信息
+  // 注入token
+  if(store.getters.token){
+    config.headers['Authorization	'] = `Bearer ${store.getters.token}`
+  }
+
+  return config  //必须返回
+},error=>{
+  return Promise.reject(error)
+})
+
 
 // 响应拦截器
 service.interceptors.response.use(response => {
