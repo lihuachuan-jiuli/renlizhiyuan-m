@@ -1,6 +1,6 @@
 import {getToken, setToken, removeToken, } from '@/utils/auth'
-import { login, getUserInfo } from '@/api/user'
-import { start } from 'nprogress'
+import { login, getUserInfo , getUserDetailById} from '@/api/user'
+
 // import { resetRouter} from '@/router'
 
 //状态
@@ -54,7 +54,9 @@ const actions = {
 
   async getUserInfo (context) {
     const result =  await getUserInfo()
-    context.commit("getUserInfo",result) //提交到 mutations
+    //获取用户详情 用户的详情数据
+     const baseInfo = await  getUserDetailById(result.userId)
+    context.commit("setUserInfo",{ ...result, ...baseInfo}) //提交到 mutations
     return result  // 这里为什么要返回 为后面做权限的时候 埋下伏笔
   }
 }
