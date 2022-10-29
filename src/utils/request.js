@@ -4,12 +4,12 @@ import { getTimeStamp } from '@/utils/auth'
 import store from '@/store'
 import router from '@/router'
 import { config } from '@vue/test-utils'
-const TimeOut = 5400 // 定义超时时间
+const TimeOut = 3600// 定义超时时间
 const service = axios.create({
 //    设置基础地址
 // 环境变量 npm run dev  /api   /生产环境 npm run build  /prod-api
   baseURL: process.env.VUE_APP_BASE_API,
-  timeout: 10000 // 认为只要超过5秒钟不响应 就超时
+  timeout: 1000// 认为只要超过5秒钟不响应 就超时
 })
 
 // 请求拦截器
@@ -17,6 +17,16 @@ service.interceptors.request.use(config=>{
   // config 是请求的配置信息
   // 注入token
   if(store.getters.token){
+    // 只有在有token 的情况下, 才有必要去检查时间戳是否超时
+    if (IsCheckTimeOut()) {
+      // 如果它为true表示 过期了
+      // token没用了 因为超时了
+      store.dispatch('user/logout') // 登出操作
+      // 跳转到登录页
+      router.push('/login')
+      return Promise.reject(new Error('token超时了'))
+    }
+
     config.headers['Authorization'] = `Bearer ${store.getters.token}`
   }
 
@@ -43,14 +53,25 @@ service.interceptors.response.use(response => {
   // error 有response对象 config
   if (error.response && error.response.data && error.response.data.code === 10002) {
     // 后端告诉前端token超时了
-    await store.dispatch('user/lgout') // 调用登出action
+    await store.dispatch('user/logout') // 调用登出action
     router.push('/login') // 跳到登录页
-  }
-  // 失败
+  }else{
+    // 失败
   // Message等同于 this.$message
   Message.error(error.message) // 提示错误
   // reject
+  
+  }
   return Promise.reject(error) // 传入一个错误的对象  就认为promise执行链 进入了catch
+  
 })
+
+// 是否超时
+//超时逻辑 ( 当前时间 - 缓存中的时间 ) 是否大于 时间差
+function IsCheckTimeOut() {
+  var currentTime = Date.now() // 当前时间戳
+  var timeStamp = getTimeStamp() // 缓存时间戳
+  return (currentTime - timeStamp) / 1000 > TimeOut
+}
 
 export default service
