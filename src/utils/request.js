@@ -3,7 +3,6 @@ import { Message } from 'element-ui'
 import { getTimeStamp } from '@/utils/auth'
 import store from '@/store'
 import router from '@/router'
-import { config } from '@vue/test-utils'
 const TimeOut = 3600// 定义超时时间
 const service = axios.create({
 //    设置基础地址
@@ -13,10 +12,10 @@ const service = axios.create({
 })
 
 // 请求拦截器
-service.interceptors.request.use(config=>{
+service.interceptors.request.use(config => {
   // config 是请求的配置信息
   // 注入token
-  if(store.getters.token){
+  if (store.getters.token) {
     // 只有在有token 的情况下, 才有必要去检查时间戳是否超时
     if (IsCheckTimeOut()) {
       // 如果它为true表示 过期了
@@ -30,11 +29,10 @@ service.interceptors.request.use(config=>{
     config.headers['Authorization'] = `Bearer ${store.getters.token}`
   }
 
-  return config  //必须返回
-},error=>{
+  return config // 必须返回
+}, error => {
   return Promise.reject(error)
 })
-
 
 // 响应拦截器
 service.interceptors.response.use(response => {
@@ -55,19 +53,17 @@ service.interceptors.response.use(response => {
     // 后端告诉前端token超时了
     await store.dispatch('user/logout') // 调用登出action
     router.push('/login') // 跳到登录页
-  }else{
+  } else {
     // 失败
   // Message等同于 this.$message
-  Message.error(error.message) // 提示错误
-  // reject
-  
+    Message.error(error.message) // 提示错误
+    // reject
   }
   return Promise.reject(error) // 传入一个错误的对象  就认为promise执行链 进入了catch
-  
 })
 
 // 是否超时
-//超时逻辑 ( 当前时间 - 缓存中的时间 ) 是否大于 时间差
+// 超时逻辑 ( 当前时间 - 缓存中的时间 ) 是否大于 时间差
 function IsCheckTimeOut() {
   var currentTime = Date.now() // 当前时间戳
   var timeStamp = getTimeStamp() // 缓存时间戳

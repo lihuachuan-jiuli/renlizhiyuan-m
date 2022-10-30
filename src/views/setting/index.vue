@@ -1,19 +1,15 @@
 <template>
   <div class="dashboard-container">
     <div class="app-container">
-      <h2>
-       公司设定
-      </h2>
+      <h2>公司设定</h2>
     </div>
   </div>
 </template>
 
 <script>
-export default {
-
-}
+// eslint-disable-next-line semi
+export default {};
 </script>
 
 <style>
-
 </style>
