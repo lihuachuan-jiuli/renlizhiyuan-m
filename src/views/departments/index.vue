@@ -3,73 +3,13 @@
     <div class="app-container">
       <!-- 组织架构的内容 -->
       <el-card class="tree-card">
-        <!-- 放置结构内容 -->
-        <el-row type="flex" justify="space-between" align="middle" style="height: 40px">
 
-          <!-- 左侧内容 -->
-          <el-col>
-            <span>江苏传智播客教育科技股份有限公司</span>
-          </el-col>
-
-          <!-- 右侧内容 -->
-          <el-col :span="4">
-            <el-row type="flex" justify="end">
-              <el-col>负责人 </el-col>
-              <el-col>
-                <!-- 下拉菜单 -->
-                <el-dropdown>
-                  <!-- 内容 -->
-                  <span>操作
-                    <i class="el-icon-arrow-down" />
-                  </span>
-                  <!-- 具名插槽 -->
-                  <el-dropdown-menu slot="dropdown">
-                    <!-- 下拉选项 -->
-                    <el-dropdown-item>
-                      添加子部门
-                    </el-dropdown-item>
-                  </el-dropdown-menu>
-                </el-dropdown>
-              </el-col>
-            </el-row>
-          </el-col>
-        </el-row>
-        <!-- 放置一个 -->
+        <TreeToods :tree-node="company" :is-root="true" />
 
         <el-tree :data="departs" :props="defaultProps" :default-expand-all="true">
           <!--  传入内容 插槽内容  会循环多少次 有多少节点 就循环多少次-->
           <!-- 作用域插槽 slot-scope="obj" -->
-          <el-row slot-scope="{data}" type="flex" justify="space-between" align="middle" style="height: 40px;width: 100%;">
-
-            <!-- 左侧内容 -->
-            <el-col>
-              <span>{{ data.name }}</span>
-            </el-col>
-
-            <!-- 右侧内容 -->
-            <el-col :span="4">
-              <el-row type="flex" justify="end">
-                <el-col>{{ data.manager }} </el-col>
-                <el-col>
-                  <!-- 下拉菜单 -->
-                  <el-dropdown>
-                    <!-- 内容 -->
-                    <span>操作
-                      <i class="el-icon-arrow-down" />
-                    </span>
-                    <!-- 具名插槽 -->
-                    <el-dropdown-menu slot="dropdown">
-                      <!-- 下拉选项 -->
-                      <el-dropdown-item> 添加子部门</el-dropdown-item>
-                      <el-dropdown-item>编辑部门</el-dropdown-item>
-                      <el-dropdown-item> 删除部门</el-dropdown-item>
-                    </el-dropdown-menu>
-                  </el-dropdown>
-                </el-col>
-              </el-row>
-            </el-col>
-          </el-row>
-
+          <TreeToods slot-scope="{data}" :tree-node="data" />
         </el-tree>
       </el-card>
     </div>
@@ -77,9 +17,16 @@
 </template>
 
 <script>
+import TreeToods from './components/tree-toods.vue'
+import { getDepartments } from '@/api/departments'
+import { tranListToTreeData } from '@/utils/index'
 export default {
+  components: {
+    TreeToods
+  },
   data() {
     return {
+      company: { name: '四川九离科技有限公司', manager: '九离' }, // 就是头部的数据结构
       departs: [{ name: '总裁办', manager: '曹操', children: [{ name: '董事会', manager: '曹丕' }] },
         { name: '行政部', manager: '刘备' },
         { name: '人事部', manager: '孙权' }],
@@ -89,10 +36,19 @@ export default {
       }
     }
   },
+
+  created() {
+    this.getDepartments() // 调用自身的方法
+  },
   methods: {
-    handleNodeClick(data) {
-      console.log(data)
+    async getDepartments() {
+      const result = await getDepartments()
+      this.company = { name: result.companyName, manager: '李华川' }
+      // 需要将获取过来的数据转化成树结构 ==== 递归算法
+      this.departs = tranListToTreeData(result.depts, '')
+      console.log(result)
     }
+
   }
 }
 </script>
