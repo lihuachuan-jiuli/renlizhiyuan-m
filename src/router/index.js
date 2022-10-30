@@ -15,9 +15,9 @@ Vue.use(Router)
 /* Layout */
 import Layout from '@/layout'
 
-//定义一个动态路由变量
-//这里导出这个变量, 后面做权限的时候会用到
-export const asyncRoutes =[
+// 定义一个动态路由变量
+// 这里导出这个变量, 后面做权限的时候会用到
+export const asyncRoutes = [
   approvalsRouter,
   departmentsRouter,
   employeesRouter,
@@ -25,7 +25,7 @@ export const asyncRoutes =[
   attendancesRouter,
   salarysRouter,
   settingRouter,
-  socialRouter,
+  socialRouter
 ]
 
 // 静态路由表
@@ -50,11 +50,9 @@ export const constantRoutes = [
       path: 'dashboard',
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Dashboard', icon: 'dashboard' }
+      meta: { title: '首页', icon: 'dashboard' }
     }]
   },
-
-  
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
@@ -63,10 +61,10 @@ export const constantRoutes = [
 const createRouter = () => new Router({
   // mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),
-  routes: [...constantRoutes, ...asyncRoutes] //静态路由和动态路由的临时合并
+  routes: [...constantRoutes, ...asyncRoutes] // 静态路由和动态路由的临时合并
 })
 
-const router = createRouter()  //实例化一个路由
+const router = createRouter() // 实例化一个路由
 
 // Detail see: https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465
 export function resetRouter() {
