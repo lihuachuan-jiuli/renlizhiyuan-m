@@ -5,7 +5,7 @@
     :visible="showDialog"
   >
     <!-- 表单数据  label-width设置标题的宽度 -->
-    <el-form :model="formData" :rules="rules" label-width="120px">
+    <el-form ref="deptForm" :model="formData" :rules="rules" label-width="120px">
       <el-form-item label="部门名称" prop="name">
         <el-input v-model="formData.name" style="width:80%" placeholder="1-50个字符" />
       </el-form-item>
@@ -28,7 +28,7 @@
     <el-row slot="footer" type="flex" justify="center">
       <el-col :span="6">
         <el-button size="small">取消</el-button>
-        <el-button type="primary" size="small">确认</el-button>
+        <el-button type="primary" size="small" @click="btnOk">确认</el-button>
       </el-col>
     </el-row>
 
@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import { getDepartments } from '@/api/departments'
+import { getDepartments, addDepartments } from '@/api/departments'
 import { getEmployeeSimple } from '@/api/employees'
 
 export default {
@@ -99,6 +99,19 @@ export default {
   methods: {
     async getEmployeeSimple() {
       this.peoples = await getEmployeeSimple()
+    },
+
+    btnOk() {
+      // 手动校验表单
+      this.$refs.deptForm.validate(async isOk => {
+        if (isOk) {
+          // 表单校验通过
+          // 将 ID 设成我们的 pid
+          await addDepartments({ ...this.formData, pid: this.treeNode.id })
+          // 告诉父组件 更新数据
+          this.$emit('addDepts') // 触发一个自定义事件
+        }
+      })
     }
 
   }
