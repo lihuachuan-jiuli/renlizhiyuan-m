@@ -13,7 +13,11 @@
         <el-input v-model="formData.code" style="width:80%" placeholder="1-50个字符" />
       </el-form-item>
       <el-form-item label="部门负责人" prop="manager">
-        <el-select v-model="formData.manager" style="width:80%" placeholder="请选择" />
+        <!-- native 修饰符, 可以找到原生元素事件 -->
+        <el-select v-model="formData.manager" style="width:80%" placeholder="请选择" @focus="getEmployeeSimple">
+          <!-- 建立选项 -->
+          <el-option v-for="item in peoples" :key="item.id" :label="item.username" :value="item.username" />
+        </el-select>
       </el-form-item>
       <el-form-item label="部门介绍" prop="introduce">
         <el-input v-model="formData.introduce" style="width:80%" placeholder="1-300个字符" type="textarea" :rows="3" />
@@ -33,6 +37,7 @@
 
 <script>
 import { getDepartments } from '@/api/departments'
+import { getEmployeeSimple } from '@/api/employees'
 
 export default {
   props: {
@@ -86,8 +91,16 @@ export default {
         manager: [{ required: true, message: '部门负责人不能为空', trigger: 'blur' }],
         introduce: [{ required: true, message: '部门介绍不能为空', trigger: 'blur' },
           { trigger: 'blur', min: 1, max: 300, message: '部门介绍要求1-50个字符' }]
-      }
+      },
+      peoples: []
     }
+  },
+
+  methods: {
+    async getEmployeeSimple() {
+      this.peoples = await getEmployeeSimple()
+    }
+
   }
 
 }
