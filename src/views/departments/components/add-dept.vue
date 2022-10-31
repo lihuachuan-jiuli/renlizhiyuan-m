@@ -32,14 +32,38 @@
 </template>
 
 <script>
+import { getDepartments } from '@/api/departments'
+
 export default {
   props: {
     showDialog: {
       type: Boolean,
       default: false
+    },
+    treeNode: {
+      type: Object,
+      default: null
     }
+
   },
   data() {
+    // 检查部门名称是否重复
+    const checkNameRepeat = async(rule, value, callback) => {
+      // value 是部门名称 要去和同级部门下的部门去比较, 有没有相同的 不能过/ 没有就可以过
+      const { depts } = await getDepartments()
+
+      // 去找同级部门下 有没有和value相同的数据
+      // 找到所有的子部门
+      const isRepeat = depts.filter(item => item.pid === this.treeNode.id).some(item => item.name === value)
+      // 如果isRepeat 为true 表示 找到了一样的名字
+      isRepeat ? callback(new Error(`同级部门下已经存在这个${value}部门了`)) : callback()
+    }
+    const checkCodeRepeat = async(rule, value, callback) => {
+      const { depts } = await getDepartments()
+      // 要求编码 和所有的部门编码都不能重复, 由于历史数据有可能没有Code 所以说致力加一个强制性条件 就是value 值不能为空
+      const isRepeat = depts.some(item => item.code === value && value)
+      isRepeat ? callback(new Error(`组织架构下已经存在这个${value}了`)) : callback()
+    }
     return {
       // 定义一个表单数据
       formData: {
@@ -51,9 +75,14 @@ export default {
       // 校验规则 {key : 数组}
       rules: {
         name: [{ required: true, message: '部门名称不能为空', trigger: 'blur' },
-          { min: 1, max: 50, message: '部门名称要求1-50个字符', trigger: 'blur' }],
+          { min: 1, max: 50, message: '部门名称要求1-50个字符', trigger: 'blur' }, {
+            trigger: 'blur', validator: checkNameRepeat
+          }],
+
         code: [{ required: true, message: '部门编码不能为空', trigger: 'blur' },
-          { min: 1, max: 50, message: '部门编码要求1-50个字符', trigger: 'blur' }],
+          { min: 1, max: 50, message: '部门编码要求1-50个字符', trigger: 'blur' }, {
+            trigger: 'blur', validator: checkCodeRepeat
+          }],
         manager: [{ required: true, message: '部门负责人不能为空', trigger: 'blur' }],
         introduce: [{ required: true, message: '部门介绍不能为空', trigger: 'blur' },
           { trigger: 'blur', min: 1, max: 300, message: '部门介绍要求1-50个字符' }]

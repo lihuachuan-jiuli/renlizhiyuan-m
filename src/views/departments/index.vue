@@ -14,7 +14,7 @@
       </el-card>
     </div>
     <!-- 放置新增弹出层 -->
-    <addDept :show-dialog="showDialog" />
+    <addDept :show-dialog="showDialog" :tree-node="node" />
 
   </div>
 </template>
@@ -52,6 +52,7 @@ export default {
       // this.company = { name: result.companyName, manager: '' }
       // 需要将获取过来的数据转化成树结构 ==== 递归算法
       this.departs = tranListToTreeData(result.depts, '')
+      this.company = { name: result.companyName, manager: '负责人', id: '' }
       console.log(result)
     },
 
