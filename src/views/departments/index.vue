@@ -9,12 +9,12 @@
         <el-tree :data="departs" :props="defaultProps" :default-expand-all="true">
           <!--  传入内容 插槽内容  会循环多少次 有多少节点 就循环多少次-->
           <!-- 作用域插槽 slot-scope="obj" -->
-          <TreeToods slot-scope="{data}" :tree-node="data" @delDepts="getDepartments" @addDepts="addDept" />
+          <TreeToods slot-scope="{data}" :tree-node="data" @delDepts="getDepartments" @addDepts="addDept" @editDepts="editDepts" />
         </el-tree>
       </el-card>
     </div>
     <!-- 放置新增弹出层 -->
-    <addDept :show-dialog="showDialog" :tree-node="node" @addDepts="getDepartments " @delBtn="clear" />
+    <addDept ref="addDept" :show-dialog.sync="showDialog" :tree-node="node" @addDepts="getDepartments " @delBtn="clear" />
 
   </div>
 </template>
@@ -65,6 +65,14 @@ export default {
 
     clear(value) {
       this.showDialog = value
+    },
+
+    // 编辑
+    async editDepts(node) {
+      this.showDialog = true // 弹出层
+      this.node = node
+      // 应该在这里调用获取部门详情的方法
+      await this.$refs.addDept.getDepartDetail(node.id)
     }
 
   }
