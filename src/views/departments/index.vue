@@ -14,7 +14,7 @@
       </el-card>
     </div>
     <!-- 放置新增弹出层 -->
-    <addDept :show-dialog="showDialog" :tree-node="node" @addDepts="getDepartments" />
+    <addDept :show-dialog="showDialog" :tree-node="node" @addDepts="getDepartments " @delBtn="clear" />
 
   </div>
 </template>
@@ -61,7 +61,12 @@ export default {
     addDept(node) {
       this.showDialog = true // 显示弹层
       this.node = node
+    },
+
+    clear(value) {
+      this.showDialog = value
     }
+
   }
 }
 </script>

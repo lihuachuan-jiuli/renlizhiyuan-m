@@ -3,6 +3,7 @@
   <el-dialog
     title="新增部门"
     :visible="showDialog"
+    @close="btnCancel"
   >
     <!-- 表单数据  label-width设置标题的宽度 -->
     <el-form ref="deptForm" :model="formData" :rules="rules" label-width="120px">
@@ -27,8 +28,8 @@
     <!-- 确定和取消 -->
     <el-row slot="footer" type="flex" justify="center">
       <el-col :span="6">
-        <el-button size="small">取消</el-button>
-        <el-button type="primary" size="small" @click="btnOk">确认</el-button>
+        <el-button size="small" @click.native="btnCancel">取消</el-button>
+        <el-button type="primary" size="small" @click.native="btnOk">确认</el-button>
       </el-col>
     </el-row>
 
@@ -110,8 +111,19 @@ export default {
           await addDepartments({ ...this.formData, pid: this.treeNode.id })
           // 告诉父组件 更新数据
           this.$emit('addDepts') // 触发一个自定义事件
+          // 关闭弹层 此时应该去修改 showDialog 值
+          // update: props名称
+          this.$emit('delBtn', false)
         }
       })
+    },
+
+    btnCancel() {
+      // 关闭弹层
+      this.$emit('delBtn', false)
+      //  清除之前的校验
+      // resetFields() 对整个表单进行重置，将所有字段值重置为初始值并移除校验结果
+      this.$refs.deptForm.resetFields()
     }
 
   }

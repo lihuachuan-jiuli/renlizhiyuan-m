@@ -4,13 +4,13 @@
     <div class="app-breadcrumb">
       四川九离科技股份有限公司
       <span class="breadBtn">体验版</span>
-  </div>
+    </div>
     <div class="right-menu">
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
 
           <img v-imageerror="defaultImg" :src="staffPhoto" class="user-avatar">
-          <span class="name">{{name}}</span>
+          <span class="name">{{ name }}</span>
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
@@ -36,19 +36,19 @@ import { mapGetters } from 'vuex'
 import Hamburger from '@/components/Hamburger'
 
 export default {
-  data(){
+  components: {
+    Hamburger
+  },
+  data() {
     return {
       defaultImg: require('@/assets/common/touxiang.jpg')
     }
-  },
-  components: {
-    Hamburger
   },
   computed: {
     ...mapGetters([
       'sidebar',
       'name',
-      'staffPhoto',
+      'staffPhoto'
     ])
   },
   methods: {
@@ -57,8 +57,8 @@ export default {
     },
     // 退出登录
     async logout() {
-      await this.$store.dispatch('user/logout') //这里无论写不写 await 登出方法都是同步的
-      this.$router.push(`/login`)  //跳到登录页面
+      await this.$store.dispatch('user/logout') // 这里无论写不写 await 登出方法都是同步的
+      this.$router.push(`/login`) // 跳到登录页面
     }
   }
 }
@@ -114,7 +114,7 @@ export default {
     &:focus {
       outline: none;
     }
-   
+
    .name {
           color: #fff;
           vertical-align: middle;
@@ -152,8 +152,6 @@ export default {
           border-radius: 15px;
           vertical-align: middle;
    }
-   
-
 
         .el-icon-caret-bottom {
           cursor: pointer;
