@@ -20,9 +20,9 @@
               <el-table-column align="center" prop="description" label="描述" />
               <el-table-column align="center" label="操作">
                 <!-- 作用域插槽 -->
-                <template slot-scope="{row}">
+                <template slot-scope="{ row }">
                   <el-button size="small" type="success">分配权限</el-button>
-                  <el-button size="small" type="primary">编辑</el-button>
+                  <el-button size="small" type="primary" @click="editRole(row.id)">编辑</el-button>
                   <el-button size="small" type="danger" @click="deleteRole(row.id)">删除</el-button>
                 </template>
 
@@ -33,9 +33,9 @@
               <!-- 分页组件 -->
               <el-pagination
                 :current-page="page.page"
-                :page-sizes="page.pagesize"
+                :page-size="page.pagesize"
                 :total="page.total"
-                layout="prev,pager,next"
+                layout="prev, pager, next"
                 @current-change="changePage"
               />
             </el-row>
@@ -49,16 +49,16 @@
             />
             <el-form label-width="120px" style="margin-top:50px">
               <el-form-item label="公司名称">
-                <el-input disabled style="width:400px" />
+                <el-input v-model="formData.name" disabled style="width:400px" />
               </el-form-item>
               <el-form-item label="公司地址">
-                <el-input disabled style="width:400px" />
+                <el-input v-model="formData.companyAddress" disabled style="width:400px" />
               </el-form-item>
               <el-form-item label="邮箱">
-                <el-input disabled style="width:400px" />
+                <el-input v-model="formData.mailbox" disabled style="width:400px" />
               </el-form-item>
               <el-form-item label="备注">
-                <el-input type="textarea" :rows="3" disabled style="width:400px" />
+                <el-input v-model="formData.remarks" type="textarea" :rows="3" disabled style="width:400px" />
               </el-form-item>
             </el-form>
           </el-tab-pane>
@@ -66,10 +66,28 @@
         </el-tabs>
       </el-card>
     </div>
+    <!-- 放置一个弹层组件 -->
+    <el-dialog title="编辑弹层" :visible="showDialog" @close="btnCancel">
+      <el-form ref="roleForm" :model="roleForm" :rules="rules" label-width="120px">
+        <el-form-item label="角色名称" prop="name">
+          <el-input v-model="roleForm.name" />
+        </el-form-item>
+        <el-form-item label="角色描述">
+          <el-input v-model="roleForm.description" />
+        </el-form-item>
+      </el-form>
+      <!-- 底部 -->
+      <el-row slot="footer" type="flex" justify="center">
+        <el-col :span="6">
+          <el-button size="small" @click="btnCancel">取消</el-button>
+          <el-button size="small" type="primary" @click="btnOK">确定</el-button>
+        </el-col>
+      </el-row>
+    </el-dialog>
   </div>
 </template>
 <script>
-import { getRoleList, getCompanyInfo, deleteRole } from '@/api/setting' // 引入获取角色列表
+import { getRoleList, getCompanyInfo, deleteRole, getRoleDetail, updateRole, addRole } from '@/api/setting' // 引入获取角色列表
 import { mapGetters } from 'vuex'
 export default {
   data() {
@@ -77,11 +95,19 @@ export default {
       list: [],
       page: {
         page: 1,
-        pagesize: 10,
+        pageSize: 10,
         total: 5 // 记录总数
       },
-      FormData: {
+      formData: {
         // 公司信息
+      },
+      showDialog: false, // 控制弹层的显示
+      roleForm: {
+        name: '',
+        description: ''
+      },
+      rules: {
+        name: [{ required: true, message: '角色名称不能为空', trigger: 'blur' }]
       }
     }
   },
@@ -91,6 +117,7 @@ export default {
   },
   created() {
     this.getRoleList() // 获取角色列表
+    this.getCompanyInfo()
   },
   methods: {
     async getRoleList() {
@@ -98,8 +125,9 @@ export default {
       this.page.total = total
       this.list = rows
     },
+    // 获取公司的信息
     async getCompanyInfo() {
-      this.FormData = await getCompanyInfo(this.companyId) // 赋值给fromDate
+      this.formData = await getCompanyInfo(this.companyId) // 赋值给fromDate
     },
     changePage(newPage) {
       // newPage 是当前点击的页码
@@ -113,13 +141,40 @@ export default {
         // 只有点击了确定才能进入下方
         await deleteRole(id) // 调用删除接口
         this.getRoleList() // 重新加载数据
-        this.$$message.success('删除角色成功')
+        this.$message.success('删除角色成功')
       } catch (error) {
         console.log(error)
       }
-    }
-  }
+    },
+    async editRole(id) {
+      this.roleForm = await getRoleDetail(id) // 实现数据的回写
+      this.showDialog = true // 显示弹层
+    },
 
+    async btnOK() {
+      try {
+        await this.$refs.roleForm.validate()
+        // 只有校验通过的情况下 才会执行await的下方内容
+        // roleForm这个对象有id就是编辑 没有id就是新增
+        if (this.roleForm.id) {
+          await updateRole(this.roleForm)
+        } else {
+          // 新增业务
+          await addRole(this.roleForm)
+        }
+        // 重新拉取数据
+        this.getRoleList()
+        this.$message.success('操作成功')
+        this.showDialog = false // 关闭弹层  =>  触发el-dialog的事件close事件
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    btnCancel() {
+      console.log(11)
+    }
+
+  }
 }
 </script>
 
