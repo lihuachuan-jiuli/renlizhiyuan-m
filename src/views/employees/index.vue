@@ -22,10 +22,24 @@
         <el-table-column type="index" label="序号" sortable="" />
         <el-table-column prop="username" label="姓名" sortable="" />
         <el-table-column prop="workNumber" label="工号" sortable="" />
-        <el-table-column prop="formOfEmployment" label="聘用形式" sortable="" />
+        <el-table-column prop="formOfEmployment" label="聘用形式" sortable="" :formatter="formatEmployment" />
         <el-table-column prop="departmentName" label="部门" sortable="" />
-        <el-table-column prop="timeOfEntry" label="入职时间" sortable="" />
-        <el-table-column prop="enableState" label="账户状态" sortable="" />
+
+        <!-- 作用域插槽 + 过滤器 -->
+        <el-table-column prop="timeOfEntry" label="入职时间" sortable="">
+          <!-- <template slot-scope="obj"></template> -->
+          <template v-slot="{row}">
+            <!-- 将时间进行格式化 -->
+            {{ row.timeOfEntry | formatDate }}
+          </template>
+        </el-table-column>
+
+        <el-table-column prop="enableState" label="账户状态" sortable="">
+          <template v-slot="{}">
+            <el-switch :value="true" />
+          </template>
+        </el-table-column>
+
         <el-table-column label="操作" sortable="" fixed="right" width="280">
           <template>
             <el-button type="text" size="small">查看</el-button>
@@ -54,6 +68,7 @@
 
 <script>
 import { getEmployeeList } from '@/api/employees'
+import EmployeeEnum from '@/api/constant/employees' // 引入员工的枚举对象
 export default {
   data() {
     return {
@@ -80,7 +95,13 @@ export default {
     changePage(newPage) {
       this.page.page = newPage // 赋值最新的页码
       this.getEmployeeList() // 重新拉取数据
+    },
+    // 格式化聘用形式
+    formatEmployment(row, column, cellValue, index) {
+      const obj = EmployeeEnum.hireType.find((item) => item.id === cellValue)
+      return obj ? obj.value : '未知'
     }
+
   }
 
 }
