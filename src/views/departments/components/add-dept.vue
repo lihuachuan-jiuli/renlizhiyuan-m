@@ -153,7 +153,8 @@ export default {
           this.$emit('addDepts') // 触发一个自定义事件
           // 关闭弹层 此时应该去修改 showDialog 值
           // update: props名称
-          this.$emit('delBtn', false)
+          this.$emit('update:showDialog', false)
+          // this.$emit('delBtn', false)
         }
       })
     },

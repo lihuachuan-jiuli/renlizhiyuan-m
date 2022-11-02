@@ -11,6 +11,7 @@
                 icon="el-icon-plus"
                 size="small"
                 type="primary"
+                @click="showDialog= true"
               >新增角色</el-button>
             </el-row>
             <!--给表格绑定数据 -->
@@ -41,6 +42,7 @@
             </el-row>
           </el-tab-pane>
           <el-tab-pane label="公司信息">
+
             <el-alert
               title="对公司名称、公司地址、营业执照、公司地区的更新，将使得公司资料被重新审核，请谨慎修改"
               type="info"
@@ -67,6 +69,7 @@
       </el-card>
     </div>
     <!-- 放置一个弹层组件 -->
+    <!-- close事件, 在点击确定的时候会触发 -->
     <el-dialog title="编辑弹层" :visible="showDialog" @close="btnCancel">
       <el-form ref="roleForm" :model="roleForm" :rules="rules" label-width="120px">
         <el-form-item label="角色名称" prop="name">
@@ -171,7 +174,13 @@ export default {
       }
     },
     btnCancel() {
-      console.log(11)
+      this.roleForm = {
+        name: '',
+        description: ''
+      }
+      // 移出校验
+      this.$refs.roleForm.resetFields()
+      this.showDialog = false
     }
 
   }
