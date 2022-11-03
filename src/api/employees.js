@@ -39,3 +39,25 @@ export function addEmployee(data) {
     data
   })
 }
+
+/**
+ * 导入一个员工数据 , 参数data是一个数组类型
+ * **/
+export function importEmployee(data) {
+  return request({
+    url: '/sys/user/batch',
+    method: 'post',
+    data
+  })
+}
+
+/**
+ * 保存用户基本信息
+ * **/
+export function saveUserDetailById(data) {
+  return request({
+    url: `/sys/user/${data.id}`,
+    method: 'put',
+    data
+  })
+}

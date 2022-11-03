@@ -56,7 +56,6 @@ export default {
       margin-right: 12px;
 }
 
-
     & .sidebar-title {
       display: inline-block;
       margin: 0;
