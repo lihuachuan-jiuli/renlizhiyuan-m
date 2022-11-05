@@ -18,6 +18,8 @@ import * as filters from '@/filters' // * as 所有方法的对象集合
 
 import '@/icons' // icon
 import '@/permission' // permission control
+import Print from 'vue-print-nb'
+Vue.use(Print)
 
 // set ElementUI lang to EN
 Vue.use(ElementUI, { locale })
