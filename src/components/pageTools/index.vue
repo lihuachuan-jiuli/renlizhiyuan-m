@@ -27,7 +27,7 @@
 export default {
   props: {
     showBefore: {
-      default: true,
+      default: false,
       type: Boolean
     }
   }
