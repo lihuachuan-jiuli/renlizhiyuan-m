@@ -18,9 +18,18 @@
             </el-form>
           </el-tab-pane>
 
-          <el-tab-pane label="个人详情" />
+          <el-tab-pane label="个人详情">
+            <!-- <UserInfo /> -->
+            <!-- vue.js中 内置了一个组件  component 动态组件-->
+            <el-button type="primary" @click="UserComponent='el-table'">切换组件1</el-button>
+            <el-button type="primary" @click="UserComponent='UserInfo'">切换组件2</el-button>
 
-          <el-tab-pane label="岗位信息" />
+            <component :is="UserComponent" />
+          </el-tab-pane>
+
+          <el-tab-pane label="岗位信息">
+            <component :is="JobComponent" />
+          </el-tab-pane>
         </el-tabs>
       </el-card>
     </div>
@@ -30,9 +39,14 @@
 <script>
 import { getUserDetailById } from '@/api/user'
 import { saveUserDetailById } from '@/api/employees'
+import UserInfo from './components/user-info.vue'
+import JobInfo from './components/job-info.vue'
 export default {
+  components: { UserInfo, JobInfo },
   data() {
     return {
+      UserComponent: UserInfo,
+      JobComponent: JobInfo,
       userId: this.$route.params.id, // 直接将路由中的参数赋值给data中的属性
       userInfo: 'user-info',
       jobInfo: 'job-info',

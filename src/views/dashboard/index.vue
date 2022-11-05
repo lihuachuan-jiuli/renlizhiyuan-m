@@ -11,6 +11,8 @@
       </template>
     </PageTools>
     <upload-excel />
+
+    <ImageUpload />
   </div>
 </template>
 
