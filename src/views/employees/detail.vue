@@ -21,8 +21,6 @@
           <el-tab-pane label="个人详情">
             <!-- <UserInfo /> -->
             <!-- vue.js中 内置了一个组件  component 动态组件-->
-            <el-button type="primary" @click="UserComponent='el-table'">切换组件1</el-button>
-            <el-button type="primary" @click="UserComponent='UserInfo'">切换组件2</el-button>
 
             <component :is="UserComponent" />
           </el-tab-pane>
