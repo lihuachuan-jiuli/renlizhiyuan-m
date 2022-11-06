@@ -72,10 +72,10 @@
             <span>流程申请</span>
           </div>
           <div class="sideNav">
-            <el-button class="sideBtn">加班离职</el-button>
+            <el-button class="sideBtn" @click="showDialog=true">加班离职</el-button>
             <el-button class="sideBtn">请假调休</el-button>
-            <el-button class="sideBtn">审批列表</el-button>
-            <el-button class="sideBtn">我的信息</el-button>
+            <el-button class="sideBtn" @click="$router.push('/users/approvals')">审批列表</el-button>
+            <el-button class="sideBtn" @click="$router.push('/users/info')">我的信息</el-button>
           </div>
         </el-card>
 
@@ -117,13 +117,35 @@
         </el-card>
       </el-col>
     </el-row>
+    <!-- 弹层 -->
+    <el-dialog :visible="showDialog" title="离职申请" @close="btnCancel">
+      <!-- 表单内容 -->
+      <el-form ref="ruleForm" label-width="120px" :model="ruleForm" :rules="rules">
+        <el-form-item label="期望离职时间" prop="exceptTime">
+          <!-- 离职时间 -->
+          <el-date-picker v-model="ruleForm.exceptTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" />
+        </el-form-item>
+        <el-form-item label="离职原因" prop="reason">
+          <el-input v-model="ruleForm.reason" type="textarea" :rows="3" style="width:70%" />
+        </el-form-item>
+      </el-form>
+      <!-- 确定取消 -->
+      <el-row slot="footer" type="flex" justify="center">
+        <el-col span="6">
+          <el-button size="small" @click="btnCancel">取消</el-button>
+          <el-button size="small" type="primary" @click="btnOK">确定</el-button>
+        </el-col>
+      </el-row>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, createNamespacedHelpers } from 'vuex'
 import WorkCalendar from './components/work-calendar.vue'
+const { mapState } = createNamespacedHelpers('user')
 import Rader from './components/radar.vue'
+import { startProcess } from '@/api/approvals'
 
 export default {
   name: 'Dashboard',
@@ -133,12 +155,53 @@ export default {
   },
   data() {
     return {
+      showDialog: false,
+      // 离职表单
+      ruleForm: {
+        // 离职时间
+        exceptTime: '',
+        // 离职原因
+        reason: '',
+        processKey: 'process_dimission', // 特定的审批
+        processName: '离职'
+      },
+      rules: {
+        exceptTime: [{ trigger: 'blur', required: true, message: '离职时间不能为空' }],
+        reason: [{ trigger: 'blur', required: true, message: '离职原因不能为空' }]
+      }
     }
   },
   computed: {
     ...mapGetters([
       'name'
-    ])
+    ]),
+    ...mapState(['userInfo'])
+  },
+  methods: {
+    btnOK() {
+      this.$refs.ruleForm.validate(async isOk => {
+        if (isOk) {
+          // 调用离职申请接口
+          await startProcess({ ...this.ruleForm, userId: this.userInfo.userId, username: this.userInfo.username })
+          // 弹出提示
+          this.$message.success('离职申请提交成功')
+          // 关闭弹层
+          this.showDialog = false
+        }
+      })
+    },
+    btnCancel() {
+      this.ruleForm = {
+        // 离职时间
+        exceptTime: '',
+        // 离职原因
+        reason: '',
+        processKey: 'process_dimission', // 特定的审批
+        processName: '离职'
+      }
+      this.$refs.ruleForm.resetFields()
+      this.showDialog = false
+    }
   }
 
 }
