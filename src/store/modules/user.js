@@ -1,6 +1,6 @@
 import { getToken, setToken, removeToken, setTimeStamp } from '@/utils/auth'
 import { login, getUserInfo, getUserDetailById } from '@/api/user'
-
+import { resetRouter } from '@/router'
 // import { resetRouter} from '@/router'
 
 // 状态
@@ -67,6 +67,14 @@ const actions = {
     context.commit('removeToken')
     // 删除用户资料
     context.commit('removeUserInfo')
+    // 重置路由
+    resetRouter()
+    // 去设置权限模块下路由为初始状态
+    // Vuex子模块怎么调用的action 都没加锁的情况下 可以随意调用
+    // 加了命名空间的子模块, 怎么调用另一个加了命名空间的子模块的mutations
+    // 加了命名空间的context指的不是全局的context
+    // mutations名称 载荷 payload 第三个参数  { root: true } 调用根级的mutations或者action
+    context.commit('permission/setRoutes', [], { root: true })
   }
 }
 

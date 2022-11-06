@@ -15,7 +15,7 @@ import components from './components'
 
 import * as directives from './directives'
 import * as filters from '@/filters' // * as 所有方法的对象集合
-
+import checkPermission from '@/mixin/checkPermission'
 import '@/icons' // icon
 import '@/permission' // permission control
 import Print from 'vue-print-nb'
@@ -36,6 +36,8 @@ Object.keys(filters).forEach(key => {
 
 // 注册自定义组件
 Vue.use(components)
+// 全局混入检查对象
+Vue.mixin(checkPermission) // 表示所有的组件都拥有了检查的方法
 
 Vue.config.productionTip = false
 
