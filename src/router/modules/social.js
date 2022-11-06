@@ -3,7 +3,7 @@ import Layout from '@/layout'
 export default {
   // 路由规则
   path: '/social', // 路由地址
-  name: 'social', // 给模块的一级路由加一个name 属性
+  name: 'social_securitys', // 给模块的一级路由加一个name 属性
   component: Layout,
   children: [{
     // 二级路由的path 什么的不写的时候, 此时它表示二级路由的默认路由
