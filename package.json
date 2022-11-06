@@ -8,7 +8,6 @@
     "build:prod": "vue-cli-service build",
     "build:stage": "vue-cli-service build --mode staging",
     "preview": "node build/index.js --preview",
-    
     "lint": "eslint --ext .js,.vue src",
     "svgo": "svgo -f src/icons/svg --config=src/icons/svgo.yml",
     "test:unit": "jest --clearCache && vue-cli-service test:unit",
@@ -18,6 +17,7 @@
     "axios": "0.18.1",
     "core-js": "3.6.5",
     "cos-js-sdk-v5": "^1.4.10",
+    "echarts": "^5.4.0",
     "element-ui": "2.13.2",
     "file-saver": "^2.0.5",
     "js-cookie": "2.2.0",

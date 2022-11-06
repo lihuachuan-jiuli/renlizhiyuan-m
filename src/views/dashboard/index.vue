@@ -8,8 +8,8 @@
             <img src="@/assets/common/touxiang.jpg">
           </div>
           <div class="headInfoTip">
-            <p class="firstChild">早安，管理员，祝你开心每一天！</p>
-            <p class="lastChild">早安，管理员，祝你开心每一天！</p>
+            <p class="firstChild">早安，{{ name }}，祝你开心每一天！</p>
+            <p class="lastChild">{{ name }} | 九离科技 - 管理员</p>
           </div>
         </div>
         <div class="fr" />
@@ -24,7 +24,8 @@
           <div slot="header" class="header">
             <span>工作日历</span>
           </div>
-        <!-- 放置日历组件 -->
+          <!-- 放置日历组件 -->
+          <WorkCalendar />
         </el-card>
         <!-- 公告 -->
         <el-card class="box-card">
@@ -83,7 +84,8 @@
           <div slot="header" class="header">
             <span>绩效指数</span>
           </div>
-        <!-- 放置雷达图 -->
+          <!-- 放置雷达图 -->
+          <Rader />
         </el-card>
         <!-- 帮助连接 -->
         <el-card class="box-card">
@@ -120,14 +122,25 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import WorkCalendar from './components/work-calendar.vue'
+import Rader from './components/radar.vue'
 
 export default {
   name: 'Dashboard',
+  components: {
+    WorkCalendar,
+    Rader
+  },
+  data() {
+    return {
+    }
+  },
   computed: {
     ...mapGetters([
       'name'
     ])
   }
+
 }
 </script>
 
