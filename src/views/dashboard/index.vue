@@ -131,7 +131,7 @@
       </el-form>
       <!-- 确定取消 -->
       <el-row slot="footer" type="flex" justify="center">
-        <el-col span="6">
+        <el-col :span="6">
           <el-button size="small" @click="btnCancel">取消</el-button>
           <el-button size="small" type="primary" @click="btnOK">确定</el-button>
         </el-col>

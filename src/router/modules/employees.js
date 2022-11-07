@@ -10,6 +10,7 @@ export default {
       // 二级路由的path 什么的不写的时候, 此时它表示二级路由的默认路由
       path: '',
       component: () => import('@/views/employees'),
+      name: 'employees',
       // 路由元信息 , 其实就是储存数据的对象, 我们可以在里面放一些信息
       meta: {
         title: '员工管理',

@@ -5,6 +5,8 @@ import UploadExcel from './UploadExcel'
 import ImageUpload from './ImageUpload'
 import ScreenFull from './ScreeFull'
 import ThemePicker from './ThemePicker'
+import LangSelect from './Lang'
+import TagsView from './TagsView'
 export default {
   install(Vue) {
     // 组件的注册
@@ -13,6 +15,8 @@ export default {
     Vue.component('ImageUpload', ImageUpload) // 注册图片上传组件
     Vue.component('ScreenFull', ScreenFull)
     Vue.component('ThemePicker', ThemePicker)
+    Vue.component('LangSelect', LangSelect)
+    Vue.component('TagsView', TagsView)
   }
 }
 
